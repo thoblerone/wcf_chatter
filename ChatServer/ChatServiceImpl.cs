@@ -40,14 +40,35 @@ namespace ChatServer
         {
             var connection = OperationContext.Current.GetCallbackChannel<IChatClient>();
             ChatUser user;
-            if(!_users.TryGetValue(connection, out user))
+            if (!_users.TryGetValue(connection, out user))
                 return;
+
+            Console.WriteLine("{0} sent message {1}", user.UserName, message);
+
+            // a foreach collection is immutable and can't be cdhanged from within the loop
+            var usersToBeRemovedDueToErrors = new List<IChatClient>();
 
             foreach (var otherConnection in _users.Keys)
             {
-                if(otherConnection == connection)
+                if (otherConnection == connection)
                     continue;
-                otherConnection.ReceiveMessage(user.UserName, message);
+                try
+                {
+                    otherConnection.ReceiveMessage(user.UserName, message);
+                }
+                catch (CommunicationException)
+                {
+                    // if a client closed without logging out, then this is a CommunicationObjectAbortedException
+                    Console.WriteLine(
+                        $"The connection {otherConnection} for user is not responsive. Eliminating from clients list");
+
+                    usersToBeRemovedDueToErrors.Add(otherConnection);
+                }
+            }
+
+            foreach (var remove in usersToBeRemovedDueToErrors)
+            {
+                _users.Remove(remove);
             }
         }
 
