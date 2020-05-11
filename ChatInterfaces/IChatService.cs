@@ -11,10 +11,10 @@ namespace ChatInterfaces
         [OperationContract]
         void Login(string userName);
 
-        [OperationContract]
+        [OperationContract(IsOneWay = true)]
         void Logout();
 
-        [OperationContract]
+        [OperationContract(IsOneWay = true)]
         void SendMessage(string message);
 
         ChatUser[] LoggedInUsers

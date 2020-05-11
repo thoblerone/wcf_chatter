@@ -1,0 +1,11 @@
+﻿################################################################################
+# Diese .gitignore-Datei wurde von Microsoft(R) Visual Studio automatisch erstellt.
+################################################################################
+
+/.vs
+/Backup
+/bin
+/ChatClient/obj/Debug
+/ChatInterfaces/obj/Debug
+/ChatServer/obj/Debug
+/UpgradeLog.htm
